@@ -1,0 +1,2 @@
+rootProject.name = 'online_mufti_final_with_deps'
+include ':app'
