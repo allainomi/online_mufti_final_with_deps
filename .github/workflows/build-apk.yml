@@ -18,44 +18,24 @@ jobs:
       with:
         flutter-version: '3.22.0'
         
-    - name: Fix Android V1 Embedding
+    - name: Create New Flutter Project
       run: |
-        # Create correct AndroidManifest.xml
-        mkdir -p android/app/src/main
-        cat > android/app/src/main/AndroidManifest.xml << 'EOF'
-        <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-            <uses-permission android:name="android.permission.INTERNET" />
-            <application
-                android:label="Online Mufti App"
-                android:name="\${applicationName}"
-                android:icon="@mipmap/ic_launcher">
-                <activity
-                    android:name=".MainActivity"
-                    android:exported="true"
-                    android:launchMode="singleTop"
-                    android:theme="@style/LaunchTheme"
-                    android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
-                    android:hardwareAccelerated="true"
-                    android:windowSoftInputMode="adjustResize">
-                    <meta-data
-                      android:name="io.flutter.embedding.android.NormalTheme"
-                      android:resource="@style/NormalTheme"
-                      />
-                    <meta-data
-                      android:name="io.flutter.embedding.android.SplashScreenDrawable"
-                      android:resource="@drawable/launch_background"
-                      />
-                    <intent-filter>
-                        <action android:name="android.intent.action.MAIN"/>
-                        <category android:name="android.intent.category.LAUNCHER"/>
-                    </intent-filter>
-                </activity>
-                <meta-data
-                    android:name="flutterEmbedding"
-                    android:value="2" />
-            </application>
-        </manifest>
-        EOF
+        # موجودہ فائلوں کو backup کریں
+        mkdir backup
+        cp -r lib backup/ 2>/dev/null || true
+        cp -r assets backup/ 2>/dev/null || true
+        cp pubspec.yaml backup/ 2>/dev/null || true
+        
+        # پرانی فائلیں ڈیلیٹ کریں
+        rm -rf android ios lib test
+        
+        # نیا Flutter پروجیکٹ بنائیں
+        flutter create --org com.mufti --project-name online_mufti_app .
+        
+        # پرانی فائلیں واپس کاپی کریں
+        cp -r backup/lib/* lib/ 2>/dev/null || true
+        cp -r backup/assets/* assets/ 2>/dev/null || true
+        cp backup/pubspec.yaml ./ 2>/dev/null || true
         
     - name: Install Dependencies
       run: flutter pub get
